@@ -43,8 +43,9 @@ public class BlockingEchoServer {
         try (ServerSocketChannel server = ServerSocketChannel.open()) {
             server.bind(new InetSocketAddress(port));
             //logger.info("EchoServer is listening at {}", server.getLocalAddress());
-            for (; ; ) {
+            while(true) {
                 SocketChannel client = server.accept();
+                System.out.println("New client from {}" + client.getRemoteAddress());
                 //logger.info("New client from {}", client.getRemoteAddress());
                 // We may use a custom Executor instead of ForkJoinPool in a real-world application
                 ForkJoinPool.commonPool().submit(() -> readEchoAndRepeat(client));
