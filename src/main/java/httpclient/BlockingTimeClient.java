@@ -20,10 +20,10 @@ public class BlockingTimeClient {
         try (SocketChannel client = SocketChannel.open()) {
             client.connect(endpoint);
             ByteBuffer bs = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN);
-            int n = client.read(bs);
-            if (n != 4) {
-                throw new IOException(String.format("Expected to receive 4 bytes, but %d bytes", n));
-            }
+            //int n = client.read(bs);
+            //if (n != 4) {
+            //    throw new IOException(String.format("Expected to receive 4 bytes, but %d bytes", n));
+            //}
             // We don't have unsigned types in Java, therefore we have to use Long as unsigned int
             // Without conversion, you eventually receive an negative integer
             long seconds = Integer.toUnsignedLong(bs.getInt(0));

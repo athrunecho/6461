@@ -29,6 +29,7 @@ public class BlockingTimeServer {
         try (SocketChannel client = socket) {
             client.write(bs);
         } catch (IOException e) {
+            System.out.println("Failed to report time to client" + e);
             //logger.error("Failed to report time to client", e);
         }
     }
@@ -38,8 +39,10 @@ public class BlockingTimeServer {
         try (ServerSocketChannel server = ServerSocketChannel.open()) {
             server.bind(new InetSocketAddress(port));
             //logger.info("Time server is listening at {}", server.getLocalAddress());
+            System.out.println("Time server is listening at {}" + server.getLocalAddress());
             while (true) {
                 SocketChannel client = server.accept();
+                System.out.println("New client from {}" + client.getRemoteAddress());
                 executor.submit(() -> reportTime(client));
             }
         }

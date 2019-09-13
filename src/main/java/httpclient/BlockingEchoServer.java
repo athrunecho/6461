@@ -2,8 +2,8 @@ package httpclient;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -16,7 +16,7 @@ import static java.util.Arrays.asList;
 
 public class BlockingEchoServer {
 
-    //private static final Logger logger = LoggerFactory.getLogger(BlockingEchoServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(BlockingEchoServer.class);
 
     private void readEchoAndRepeat(SocketChannel socket) {
         try (SocketChannel client = socket) {
@@ -35,18 +35,17 @@ public class BlockingEchoServer {
                 }
             }
         } catch (IOException e) {
-            //logger.error("Echo error {}", e);
+            logger.error("Echo error {}", e);
         }
     }
 
     private void listenAndServe(int port) throws IOException {
         try (ServerSocketChannel server = ServerSocketChannel.open()) {
             server.bind(new InetSocketAddress(port));
-            //logger.info("EchoServer is listening at {}", server.getLocalAddress());
+            logger.info("EchoServer is listening at {}", server.getLocalAddress());
             while(true) {
                 SocketChannel client = server.accept();
-                System.out.println("New client from {}" + client.getRemoteAddress());
-                //logger.info("New client from {}", client.getRemoteAddress());
+                logger.info("New client from {}", client.getRemoteAddress());
                 // We may use a custom Executor instead of ForkJoinPool in a real-world application
                 ForkJoinPool.commonPool().submit(() -> readEchoAndRepeat(client));
             }
