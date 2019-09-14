@@ -1,75 +1,103 @@
 package httpclient;
 
+import httpclientlibrary.HTTPGet;
+import httpclientlibrary.HTTPHelp;
+import httpclientlibrary.HTTPPost;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
+import java.io.*;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
-
 import static java.util.Arrays.asList;
 
 public class BlockingEchoClient {
 
+    private static final Logger logger = LoggerFactory.getLogger(BlockingEchoClient.class);
+
     // readFully reads until the request is fulfilled or the socket is closed
-    private static void readFully(SocketChannel socket, ByteBuffer buf, int size) throws IOException {
-        while (buf.position() < size) {
-            int n = socket.read(buf);
-            if (n == -1) {
+    private static void responseReader(Socket socket) {
+        while (true) {
+            try {
+                String response;
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+                while((response = in.readLine())!=null) {
+                    System.out.println(response);
+                }
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
                 break;
             }
         }
-        if (buf.position() != size) {
-            throw new EOFException();
+    }
+
+    private static void runClient(Socket socket) throws IOException {
+        try{
+            System.out.println("Build Socket Success");
+            Scanner scanner = new Scanner(System.in);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] cmds = line.split(" ");
+
+                if(line.equals("close")){
+                    return;
+                }else if(cmds[0].equals("httpc") && cmds.length > 1) {
+                    if(cmds[1].equals("help")){
+                        if(cmds.length > 2){
+                            HTTPHelp.help(cmds[2]);
+                        }else{
+                            HTTPHelp.help();
+                        }
+                    }
+                }else{
+                    requestHandler(socket, line);
+                }
+
+                // Receive all what we have sent
+                responseReader(socket);
+            }
+        }finally {
+            socket.close();
         }
     }
 
-    private static void readEchoAndRepeat(SocketChannel socket) throws IOException {
-        Charset utf8 = StandardCharsets.UTF_8;
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            ByteBuffer buf = utf8.encode(line);
-            int n = socket.write(buf);
-            buf.clear();
+    private static String requestHandler(Socket socket, String line) {
+        String[] cmds = line.split(" ");
+        if(cmds[0].equals("httpc") && cmds.length > 1){
 
-            // Receive all what we have sent
-            readFully(socket, buf, n);
-            buf.flip();
-            System.out.println("Replied: " + utf8.decode(buf));
+            switch(cmds[1]){
+                case "get":
+                    HTTPGet.get(socket, cmds[2]);
+                case "post":
+                    HTTPPost.post(socket);
+                default:
+                    logger.info("wtf");
+            }
         }
-    }
 
-    private static void runClient(SocketAddress endpoint) throws IOException {
-        try (SocketChannel socket = SocketChannel.open()) {
-            socket.connect(endpoint);
-            System.out.println("Type any thing then ENTER. Press Ctrl+C to terminate");
-            readEchoAndRepeat(socket);
-        }
+        return "";
     }
 
     public static void main(String[] args) throws IOException {
         OptionParser parser = new OptionParser();
         parser.acceptsAll(asList("host", "h"), "EchoServer hostname")
                 .withOptionalArg()
-                .defaultsTo("localhost");
+                .defaultsTo("httpbin.org");
 
         parser.acceptsAll(asList("port", "p"), "EchoServer listening port")
                 .withOptionalArg()
-                .defaultsTo("8007");
+                .defaultsTo("80");
 
         OptionSet opts = parser.parse(args);
-
         String host = (String) opts.valueOf("host");
         int port = Integer.parseInt((String) opts.valueOf("port"));
+        Socket socket = new Socket(host, port);
 
-        SocketAddress endpoint = new InetSocketAddress(host, port);
-        runClient(endpoint);
+        // Send socket address
+        runClient(socket);
     }
 }
