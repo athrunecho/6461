@@ -1,8 +1,9 @@
 package httpclientlibrary;
 
 public class HTTPRequestModule {
-    public
+    private
         String HTTPMethods;
         String URL;
+
 
 }

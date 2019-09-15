@@ -1,8 +1,5 @@
-package httpclient;
+package httpclientlibrary;
 
-import httpclientlibrary.HTTPGet;
-import httpclientlibrary.HTTPHelp;
-import httpclientlibrary.HTTPPost;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import org.slf4j.Logger;
