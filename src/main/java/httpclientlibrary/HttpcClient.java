@@ -11,26 +11,9 @@ import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import static java.util.Arrays.asList;
 
-public class BlockingEchoClient {
+public class HttpcClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(BlockingEchoClient.class);
-
-    // readFully reads until the request is fulfilled or the socket is closed
-    private static void responseReader(Socket socket) {
-        while (true) {
-            try {
-                String response;
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-                while((response = in.readLine())!=null) {
-                    System.out.println(response);
-                }
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-                break;
-            }
-        }
-    }
+    private static final Logger logger = LoggerFactory.getLogger(HttpcClient.class);
 
     private static void runClient(Socket socket) throws IOException {
         try{
@@ -49,34 +32,33 @@ public class BlockingEchoClient {
                         }else{
                             HTTPHelp.help();
                         }
+                    }else{
+                        requestHandler(socket, line);
                     }
-                }else{
-                    requestHandler(socket, line);
                 }
 
-                // Receive all what we have sent
-                responseReader(socket);
+                System.out.println("?????");
             }
         }finally {
+            System.out.println("why?");
             socket.close();
         }
     }
 
-    private static String requestHandler(Socket socket, String line) {
+    private static void requestHandler(Socket socket, String line) {
         String[] cmds = line.split(" ");
         if(cmds[0].equals("httpc") && cmds.length > 1){
 
             switch(cmds[1]){
                 case "get":
-                    HTTPGet.get(socket, cmds[2]);
+                    HTTPGet.get(socket, cmds);
                 case "post":
                     HTTPPost.post(socket);
                 default:
                     logger.info("wtf");
             }
         }
-
-        return "";
+        return;
     }
 
     public static void main(String[] args) throws IOException {

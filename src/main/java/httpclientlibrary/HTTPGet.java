@@ -11,16 +11,30 @@ public class HTTPGet {
 
     private static final Logger logger = LoggerFactory.getLogger(HTTPGet.class);
 
-    public static void get(Socket socket, String URL) {
+    public static void get(Socket socket, String[] args) {
         try{
-            String httpRequest = "";
+            HTTPRequestModule getRequest = new HTTPRequestModule();
+            String URL = "";
+            for(int i=2;i<args.length;i++){
+                if(args[i].contains("http://")){
+                    URL = args[i].replaceAll("'","");
+                }
+            }
+            getRequest.setMethodAndURL("GET", URL);
+            String httpRequest = getRequest.printRequest();
+
+            System.out.println(httpRequest);
+
             OutputStream request = socket.getOutputStream();
             request.write(httpRequest.getBytes());
             request.flush();
+
+            String arg = "";
+            // Receive all what we have sent
+            ResponseReader.readResponse(socket, arg);
         }catch (IOException e){
             e.printStackTrace();
         }
     }
-
 
 }
