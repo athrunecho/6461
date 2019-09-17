@@ -1,10 +1,10 @@
 package httpclientlibrary;
 
-import java.net.Socket;
+import java.nio.channels.SocketChannel;
 
 public class HTTPPost {
 
-    public static void post(Socket socket) {
+    public static void post(SocketChannel channel, String[] args) {
 
     }
 }

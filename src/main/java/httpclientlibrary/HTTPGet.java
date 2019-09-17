@@ -4,14 +4,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 
 public class HTTPGet {
 
     private static final Logger logger = LoggerFactory.getLogger(HTTPGet.class);
 
-    public static void get(Socket socket, String[] args) {
+    public static void get(SocketChannel channel, String[] args) {
         try{
             HTTPRequestModule getRequest = new HTTPRequestModule();
             String URL = "";
@@ -23,15 +23,18 @@ public class HTTPGet {
             getRequest.setMethodAndURL("GET", URL);
             String httpRequest = getRequest.printRequest();
 
-            System.out.println(httpRequest);
+            // Using ByteBuffer to write into socket channel
+            ByteBuffer buffer = ByteBuffer.allocate(2048);
+            buffer.put(httpRequest.getBytes());
+            buffer.flip();
 
-            OutputStream request = socket.getOutputStream();
-            request.write(httpRequest.getBytes());
-            request.flush();
+            while(buffer.hasRemaining()) {
+                channel.write(buffer);
+            }
 
             String arg = "";
             // Receive all what we have sent
-            ResponseReader.readResponse(socket, arg);
+            ResponseReader.readResponse(channel, arg);
         }catch (IOException e){
             e.printStackTrace();
         }

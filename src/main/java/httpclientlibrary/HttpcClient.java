@@ -6,8 +6,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 import static java.util.Arrays.asList;
 
@@ -15,9 +16,11 @@ public class HttpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpcClient.class);
 
-    private static void runClient(Socket socket) throws IOException {
+    private static void runClient(SocketAddress address) {
         try{
-            System.out.println("Build Socket Success");
+            SocketChannel channel = SocketChannel.open();
+            channel.connect(address);
+
             Scanner scanner = new Scanner(System.in);
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -33,27 +36,25 @@ public class HttpcClient {
                             HTTPHelp.help();
                         }
                     }else{
-                        requestHandler(socket, line);
+                        requestHandler(channel, line);
                     }
                 }
 
-                System.out.println("?????");
             }
-        }finally {
-            System.out.println("why?");
-            socket.close();
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 
-    private static void requestHandler(Socket socket, String line) {
+    private static void requestHandler(SocketChannel channel, String line) {
         String[] cmds = line.split(" ");
         if(cmds[0].equals("httpc") && cmds.length > 1){
 
             switch(cmds[1]){
                 case "get":
-                    HTTPGet.get(socket, cmds);
+                    HTTPGet.get(channel, cmds);
                 case "post":
-                    HTTPPost.post(socket);
+                    HTTPPost.post(channel, cmds);
                 default:
                     logger.info("wtf");
             }
@@ -74,9 +75,8 @@ public class HttpcClient {
         OptionSet opts = parser.parse(args);
         String host = (String) opts.valueOf("host");
         int port = Integer.parseInt((String) opts.valueOf("port"));
-        Socket socket = new Socket(host, port);
 
         // Send socket address
-        runClient(socket);
+        runClient(new InetSocketAddress(host, port));
     }
 }
