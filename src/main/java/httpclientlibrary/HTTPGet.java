@@ -21,6 +21,7 @@ public class HTTPGet {
                 }
             }
             getRequest.setMethodAndURL("GET", URL);
+
             String httpRequest = getRequest.printRequest();
 
             // Using ByteBuffer to write into socket channel
@@ -32,9 +33,8 @@ public class HTTPGet {
                 channel.write(buffer);
             }
 
-            String arg = "";
             // Receive all what we have sent
-            ResponseReader.readResponse(channel, arg);
+            ResponseReader.readResponse(channel, args);
         }catch (IOException e){
             e.printStackTrace();
         }

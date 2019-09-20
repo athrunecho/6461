@@ -27,19 +27,25 @@ public class HttpcClient {
                 String[] cmds = line.split(" ");
 
                 if(line.equals("close")){
+                    channel.close();
                     return;
                 }else if(cmds[0].equals("httpc") && cmds.length > 1) {
                     if(cmds[1].equals("help")){
+
                         if(cmds.length > 2){
+                            // Check HELP with argument
                             HTTPHelp.help(cmds[2]);
                         }else{
+                            //Without argument
                             HTTPHelp.help();
                         }
                     }else{
+                        // GET or POST request
                         requestHandler(channel, line);
                     }
+                }else{
+                    System.out.println("Unexpected command");
                 }
-
             }
         }catch (IOException e){
             e.printStackTrace();
