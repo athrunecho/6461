@@ -1,27 +1,25 @@
 package httpclientlibrary;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+/**
+ *
+ */
 public class HTTPGet {
 
-    private static final Logger logger = LoggerFactory.getLogger(HTTPGet.class);
-
+    /**
+     *
+     * @param channel
+     * @param args
+     */
     public static void get(SocketChannel channel, String[] args) {
         try{
-            HTTPRequestModule getRequest = new HTTPRequestModule();
-            String URL = "";
-            for(int i=2;i<args.length;i++){
-                if(args[i].contains("http://")){
-                    URL = args[i].replaceAll("'","");
-                }
+            HTTPRequestModule getRequest = HTTPRequestModule.requestBuilder("GET", args);
+            if(getRequest == null){
+                return;
             }
-            getRequest.setMethodAndURL("GET", URL);
-
             String httpRequest = getRequest.printRequest();
 
             // Using ByteBuffer to write into socket channel
@@ -34,10 +32,10 @@ public class HTTPGet {
             }
 
             // Receive all what we have sent
-            ResponseReader.readResponse(channel, args);
+            Redirection.redirector(channel, httpRequest, args);
+
         }catch (IOException e){
             e.printStackTrace();
         }
     }
-
 }

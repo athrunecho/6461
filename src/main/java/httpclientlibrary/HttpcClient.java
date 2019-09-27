@@ -12,10 +12,17 @@ import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 import static java.util.Arrays.asList;
 
+/**
+ *
+ */
 public class HttpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(HttpcClient.class);
 
+    /**
+     *
+     * @param address
+     */
     private static void runClient(SocketAddress address) {
         try{
             SocketChannel channel = SocketChannel.open();
@@ -52,6 +59,11 @@ public class HttpcClient {
         }
     }
 
+    /**
+     *
+     * @param channel
+     * @param line
+     */
     private static void requestHandler(SocketChannel channel, String line) {
         String[] cmds = line.split(" ");
         if(cmds[0].equals("httpc") && cmds.length > 1){
