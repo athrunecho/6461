@@ -20,8 +20,8 @@ public class Redirection{
         String completeResponse = stringBuf.toString().trim();
         ResponseReader.readResponse(completeResponse, args);
 
-        //
-        while(completeResponse.contains("302")){
+        /*
+        if(completeResponse.contains("HTTP/1.0 302")){
 
             //redirection
             ByteBuffer buffer = ByteBuffer.allocate(2048);
@@ -35,7 +35,7 @@ public class Redirection{
             // recursion loop for redirection
             completeResponse = Redirection.redirector(channel, httpRequest, args);
         }
-
+        */
         //
         return completeResponse;
     }

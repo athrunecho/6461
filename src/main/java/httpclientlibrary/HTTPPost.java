@@ -21,6 +21,7 @@ public class HTTPPost {
                 return;
             }
             String httpRequest = postRequest.printRequest();
+            System.out.println(httpRequest);
 
             // Using ByteBuffer to write into socket channel
             ByteBuffer buffer = ByteBuffer.allocate(2048);

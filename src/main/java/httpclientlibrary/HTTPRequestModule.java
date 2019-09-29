@@ -1,21 +1,24 @@
 package httpclientlibrary;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.HashMap;
+import java.io.File;
+import java.util.Iterator;
 
 /**
  *
  */
 public class HTTPRequestModule {
 
-    private
-        String HTTPMethods;
-        String HTTPVersion = "HTTP/1.0\r\n";
-        String Host;
-        String URL;
-        String ConnectionStatus = "Connection: Keep-Alive\r\n";
-        String ContentLength;
-        HashMap<String, String> HeaderMap = new HashMap<>();
-        String Body;
+    private String HTTPMethods;
+    private String HTTPVersion = "HTTP/1.0\r\n";
+    private String Host;
+    private String URL;
+    private String ConnectionStatus = "Connection:Keep-Alive\r\n";
+    private String ContentLength = "Content-Length:";
+    private HashMap<String, String> HeaderMap = new HashMap<>();
+    private String Body;
 
     /**
      *
@@ -26,7 +29,7 @@ public class HTTPRequestModule {
     }
 
     /**
-     *
+     * @author
      * @param key
      * @param value
      */
@@ -39,7 +42,7 @@ public class HTTPRequestModule {
      * @param content
      */
     public void setBody(String content){
-        this.ContentLength = String.valueOf(content.length());
+        this.ContentLength = ContentLength+String.valueOf(content.length());
         this.Body = content;
     }
 
@@ -48,7 +51,30 @@ public class HTTPRequestModule {
      * @return
      */
     public String printRequest(){
-        return HTTPMethods + " " + URL + " " + HTTPVersion + ConnectionStatus +"\r\n";
+
+        if(!HeaderMap.isEmpty()){
+            String diy = "";
+
+            Iterator<HashMap.Entry<String, String>> entries = HeaderMap.entrySet().iterator();
+
+            while (entries.hasNext()) {
+
+                HashMap.Entry<String, String> entry = entries.next();
+
+                diy += entry.getKey() + ":" + entry.getValue() + "\r\n";
+            }
+
+            return HTTPMethods + " " + URL + " " + HTTPVersion
+                    + diy
+                    + ContentLength + "\r\n"
+                    + ConnectionStatus + "\r\n"
+                    + Body+ "\r\n";
+        }else {
+            return HTTPMethods + " " + URL + " " + HTTPVersion
+                    + ContentLength + "\r\n"
+                    + ConnectionStatus + "\r\n"
+                    + Body+ "\r\n";
+        }
     }
 
     /**
@@ -64,13 +90,21 @@ public class HTTPRequestModule {
         // Set request method
         request.setMethod(method);
 
-        for(int i=2;i<args.length;i++){
+        for(int i=1;i<args.length;i++){
             if(args[i].contains("http://")){
                 request.URL = args[i].replaceAll("'","");
-            }else{
-                System.out.println("URL not found");
-                return null;
+                try {
+                    java.net.URL url = new java.net.URL(request.URL);
+                    request.Host = url.getHost();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
+        }
+
+        if(request.URL == null){
+            System.out.println("URL not found");
+            return null;
         }
 
         for(int i=2;i<args.length;i++){
@@ -98,11 +132,20 @@ public class HTTPRequestModule {
                 }else if(args[i].equals("-f")){
                     // Either "-d" or "-f" can be used but not both.
                     String filePath = args[i+1];
-                    if(!filePath.contains("'")){
-                        System.out.println("invalid inline data format");
-                        return null;
+                    String content = "";
+                    try {
+                        File file = new File("src/"+filePath);
+                        if(file.exists()){
+                            BufferedReader in = new BufferedReader(new FileReader("src/"+filePath));
+                            String str;
+                            while ((str = in.readLine()) != null) {
+                                content += str;
+                            }
+                        }
+                    }catch (Exception e){
+                        e.printStackTrace();
                     }
-                    request.setBody(filePath);
+                    request.setBody(content);
                 }
             }
 

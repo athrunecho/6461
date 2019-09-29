@@ -71,8 +71,10 @@ public class HttpcClient {
             switch(cmds[1]){
                 case "get":
                     HTTPGet.get(channel, cmds);
+                    break;
                 case "post":
                     HTTPPost.post(channel, cmds);
+                    break;
                 default:
                     logger.info("wtf");
             }
