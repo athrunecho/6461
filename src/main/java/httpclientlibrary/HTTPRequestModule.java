@@ -123,7 +123,7 @@ public class HTTPRequestModule {
                 // check "-d" parameter
                 if(args[i].equals("-d")){
                     String data = args[i+1];
-                    if(!data.contains("'")){
+                    if(!data.contains("\"")){
                         System.out.println("invalid inline data format");
                         return null;
                     }
