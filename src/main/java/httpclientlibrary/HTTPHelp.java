@@ -1,12 +1,14 @@
 package httpclientlibrary;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+/**
+ * HTTP help guide
+ */
 public class HTTPHelp {
 
-    private static final Logger logger = LoggerFactory.getLogger(HTTPGet.class);
-
+    /**
+     * help guide for commands
+     * @author Tiancheng
+     */
     public static void help() {
 
         System.out.print(
@@ -24,7 +26,7 @@ public class HTTPHelp {
         switch (arguments) {
 
             case "get":
-                logger.info("usage: httpc get [-v] [-h key:value] URL\r\n" +
+                System.out.println("usage: httpc get [-v] [-h key:value] URL\r\n" +
                         "Get executes a HTTP GET request for a given URL." +
                         "   -v  Prints the detail of the response such as protocol, status, and headers.\r\n" +
                         "   -h key:value    Associates headers to HTTP Request with the format 'key:value'.\r\n"
@@ -32,7 +34,7 @@ public class HTTPHelp {
                 break;
 
             case "post":
-                logger.info("usage: httpc post [-v] [-h key:value] [-d inline-data] [-f file] URL\r\n" +
+                System.out.println("usage: httpc post [-v] [-h key:value] [-d inline-data] [-f file] URL\r\n" +
                         "Post executes a HTTP POST request for a given URL with inline data or from file.\r\n" +
                         "   -v Prints the detail of the response such as protocol, status, and headers.\r\n" +
                         "   -h key:value Associates headers to HTTP Request with the format 'key:value'.\r\n" +
@@ -43,7 +45,7 @@ public class HTTPHelp {
                 break;
 
             default:
-                logger.info("Unexpected Arguments");
+                System.out.println("Unexpected Arguments");
         }
     }
 }

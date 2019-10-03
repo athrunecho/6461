@@ -2,8 +2,6 @@ package httpclientlibrary;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -13,15 +11,14 @@ import java.util.Scanner;
 import static java.util.Arrays.asList;
 
 /**
- *
+ *  An httpc client based on HTTP protocol
  */
 public class HttpcClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(HttpcClient.class);
-
     /**
-     *
-     * @param address
+     * start the client
+     * @author Tiancheng
+     * @param address HTTP address
      */
     private static void runClient(SocketAddress address) {
         try{
@@ -60,29 +57,46 @@ public class HttpcClient {
     }
 
     /**
-     *
-     * @param channel
-     * @param line
+     * switch different request
+     * @author Tiancheng
+     * @param channel socket channel of server
+     * @param line argument string
      */
     private static void requestHandler(SocketChannel channel, String line) {
-        String[] cmds = line.split(" ");
-        if(cmds[0].equals("httpc") && cmds.length > 1){
 
-            switch(cmds[1]){
-                case "get":
-                    HTTPGet.get(channel, cmds);
-                    break;
-                case "post":
-                    HTTPPost.post(channel, cmds);
-                    break;
-                default:
-                    logger.info("wtf");
+        String[] cmds = line.split(" ");
+        try {
+            if (cmds[0].equals("httpc") && cmds.length > 1) {
+
+                switch (cmds[1]) {
+                    case "get":
+                        GetRequest getRequest = GetRequest.requestBuilder(cmds);
+                        String getData = getRequest.printRequest();
+                        HTTPSender.send(channel, getData);
+                        // Receive all what we have sent
+                        Redirection.redirector(channel, getRequest, cmds);
+                        break;
+                    case "post":
+                        PostRequest postRequest = PostRequest.requestBuilder(cmds);
+                        String postData = postRequest.printRequest();
+                        HTTPSender.send(channel, postData);
+                        Redirection.redirector(channel, postRequest, cmds);
+                        break;
+                    default:
+                        System.out.println("only accept get, post and help request");
+                }
             }
+        }catch (IOException e){
+            e.printStackTrace();
         }
         return;
     }
 
-    public static void main(String[] args) throws IOException {
+    /**
+     * @author Tiancheng
+     * @param args splited arguments
+     */
+    public static void main(String[] args) {
         OptionParser parser = new OptionParser();
         parser.acceptsAll(asList("host", "h"), "EchoServer hostname")
                 .withOptionalArg()
