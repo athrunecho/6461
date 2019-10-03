@@ -3,32 +3,41 @@ package httpclientlibrary;
 import java.io.File;
 import java.io.FileOutputStream;
 
-public class ResponseReader {
+/**
+ * ResponseReader class gives command responses and print results
+ */
+public class  ResponseReader {
 
-    // readResponse reads the response from the server and prepares output format
+    /**
+     * ReadResponse method reads the responses from the server and prepares output format or command
+     * @author Anqi Wang
+     * @param content
+     * @param args
+     */
     public static void readResponse(String content, String args[]){
-
+        String print;
         String HTTPResponse = content.trim();
         String[] split = HTTPResponse.split("\r\n\r\n");
-        String print = split[1];
+        if(split.length>1){
+            print = split[1];
+        }else{
+            print = split[0];
+        }
 
         // For loop the arguments and do corresponding function.
-        for(int i=0;i<args.length;i++){
-
-            if(args[i].equals("-v")){
+        for(int i=0;i<args.length;i++) {
+            if (args[i].contains("-v")) {
                 print = HTTPResponse;
-            }if(args[i].equals("-o")){
-                byte[] sourceByte = split[1].getBytes();
+            }
+        }
+
+        for(int i=0;i<args.length;i++){
+            if(args[i].equals("-o")){
+                byte[] sourceByte = print.getBytes();
                 try {
                     // If the file not exist, create it at the root
                     File file = new File("./"+args[i+1]);
-                    /*
-                    if (!file.exists()) {
-                        File dir = new File(file.getParent());
-                        dir.mkdirs();
-                        file.createNewFile();
-                    }
-                    */
+
                     // FileOutputStream to write in file
                     FileOutputStream outStream = new FileOutputStream(file);
                     outStream.write(sourceByte);
@@ -39,6 +48,6 @@ public class ResponseReader {
                 return;
             }
         }
-        System.out.println(print);
+        System.out.println(print + "\n");
     }
 }
