@@ -22,7 +22,7 @@ public class GetRequest extends HTTPRequestModule {
 
         // Find and server url as well as host name
         for(int i=1;i<args.length;i++){
-            if(args[i].contains("http://")){
+            if(args[i].contains("http")){
                 request.setServerInfo(args[i]);
             }
         }
