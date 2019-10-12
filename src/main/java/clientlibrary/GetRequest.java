@@ -6,38 +6,39 @@ import java.util.Iterator;
 /**
  * GetRequest is a builder to generate get request
  */
-public class GetRequest extends HTTPRequestModule {
+public class GetRequest extends RequestModule {
 
     public String HTTPMethods = "GET";
 
     /**
      * accept arguements and build the get request
-     * @author Tiancheng
+     *
      * @param args arguments
      * @return GetRequest
+     * @author Tiancheng
      */
-    public static GetRequest requestBuilder(String[] args){
+    public static GetRequest requestBuilder(String[] args) {
 
         GetRequest request = new GetRequest();
 
         // Find and server url as well as host name
-        for(int i=1;i<args.length;i++){
-            if(args[i].contains("http")){
+        for (int i = 1; i < args.length; i++) {
+            if (args[i].contains("http")) {
                 request.setServerInfo(args[i]);
             }
         }
 
-        if(request.URL == null){
+        if (request.URL == null) {
             System.out.println("URL not found");
             return null;
         }
 
-        for(int i=2;i<args.length;i++){
+        for (int i = 2; i < args.length; i++) {
             // check "-h" parameter
-            if(args[i].equals("-h")){
-                String pair = args[i+1].replaceAll("\'","");
+            if (args[i].equals("-h")) {
+                String pair = args[i + 1].replaceAll("\'", "");
                 pair = pair.replaceAll("'", "");
-                if(!pair.contains(":")){
+                if (!pair.contains(":")) {
                     System.out.println("invalid parameter format");
                     return null;
                 }
@@ -51,11 +52,12 @@ public class GetRequest extends HTTPRequestModule {
 
     /**
      * print the HTTP request
-     * @author Tiancheng
+     *
      * @return formal HTTP request
+     * @author Tiancheng
      */
-    public String printRequest(){
-        if(!HeaderMap.isEmpty()){
+    public String printRequest() {
+        if (!HeaderMap.isEmpty()) {
             String settings = "";
             Iterator<HashMap.Entry<String, String>> entries = HeaderMap.entrySet().iterator();
 
@@ -73,7 +75,7 @@ public class GetRequest extends HTTPRequestModule {
                     // HTTP body
                     + Body;
 
-        }else {
+        } else {
             // HTTP header
             return HTTPMethods + " " + URL + " " + HTTPVersion
                     + ConnectionStatus

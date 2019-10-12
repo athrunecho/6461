@@ -11,13 +11,14 @@ public class Sender {
 
     /**
      * Send method sends request in bytes to object server
-     * @author Anqi Wang
+     *
      * @param channel alive SocketChannel
-     * @param data request data
+     * @param data    request data
+     * @author Anqi Wang
      */
     public static void send(SocketChannel channel, String data) {
-        try{
-            if(data == null){
+        try {
+            if (data == null) {
                 return;
             }
             // Using ByteBuffer to write into socket channel
@@ -25,10 +26,10 @@ public class Sender {
             buffer.put(data.getBytes());
             buffer.flip();
 
-            while(buffer.hasRemaining()) {
+            while (buffer.hasRemaining()) {
                 channel.write(buffer);
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

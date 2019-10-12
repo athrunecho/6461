@@ -1,4 +1,4 @@
-package http.serverlibrary;
+package serverlibrary;
 
 public class HTTPParser {
 

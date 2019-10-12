@@ -3,25 +3,27 @@ package clientlibrary;
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
+
 import static java.util.Arrays.asList;
 
 /**
- *  An httpc client based on HTTP protocol
+ * An httpc client based on HTTP protocol
  */
 public class HttpcClient {
 
     /**
      * start the client
-     * @author Tiancheng
+     *
      * @param address HTTP address
+     * @author Tiancheng
      */
     private static void runClient(SocketAddress address) {
-        try{
+        try {
             SocketChannel channel = SocketChannel.open();
             channel.connect(address);
 
@@ -30,37 +32,38 @@ public class HttpcClient {
                 String line = scanner.nextLine();
                 String[] cmds = line.split(" ");
 
-                if(line.equals("close")){
+                if (line.equals("close")) {
                     channel.close();
                     return;
-                }else if(cmds[0].equals("httpc") && cmds.length > 1) {
-                    if(cmds[1].equals("help")){
+                } else if (cmds[0].equals("httpc") && cmds.length > 1) {
+                    if (cmds[1].equals("help")) {
 
-                        if(cmds.length > 2){
+                        if (cmds.length > 2) {
                             // Check HELP with argument
                             Help.help(cmds[2]);
-                        }else{
+                        } else {
                             //Without argument
                             Help.help();
                         }
-                    }else{
+                    } else {
                         // GET or POST request
                         requestHandler(channel, line);
                     }
-                }else{
+                } else {
                     System.out.println("Unexpected command");
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * switch different request
-     * @author Tiancheng
+     *
      * @param channel socket channel of server
-     * @param line argument string
+     * @param line    argument string
+     * @author Tiancheng
      */
     private static void requestHandler(SocketChannel channel, String line) {
 
@@ -86,15 +89,15 @@ public class HttpcClient {
                         System.out.println("only accept get, post and help request");
                 }
             }
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return;
     }
 
     /**
-     * @author Tiancheng
      * @param args splited arguments
+     * @author Tiancheng
      */
     public static void main(String[] args) {
         OptionParser parser = new OptionParser();

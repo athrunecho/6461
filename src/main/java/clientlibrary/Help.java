@@ -7,6 +7,7 @@ public class Help {
 
     /**
      * help guide for commands
+     *
      * @author Tiancheng
      */
     public static void help() {

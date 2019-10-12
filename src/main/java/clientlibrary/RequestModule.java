@@ -3,9 +3,9 @@ package clientlibrary;
 import java.util.HashMap;
 
 /**
- * HTTPRequestModule is an abstract class
+ * RequestModule is an abstract class
  */
-public class HTTPRequestModule {
+public class RequestModule {
 
     public String HTTPVersion = "HTTP/1.0\r\n";
     public String Host;
@@ -17,36 +17,39 @@ public class HTTPRequestModule {
 
     /**
      * setServerInfo write the host and url of server address
-     * @author Tiancheng
+     *
      * @param url server url
+     * @author Tiancheng
      */
-    public void setServerInfo(String url){
-        url = url.replaceAll("\'","");
+    public void setServerInfo(String url) {
+        url = url.replaceAll("\'", "");
         try {
             this.URL = url;
             java.net.URL URL = new java.net.URL(url);
             this.Host = URL.getHost();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     /**
      * setBody put content into HTTP request body
-     * @author Tiancheng
+     *
      * @param content HTTP request body
+     * @author Tiancheng
      */
-    public void setBody(String content){
+    public void setBody(String content) {
         this.Body += content;
         this.ContentLength = "Content-Length:" + String.valueOf(this.Body.length());
     }
 
     /**
      * Override method for self define
-     * @author Tiancheng
+     *
      * @return empty
+     * @author Tiancheng
      */
-    public String printRequest(){
+    public String printRequest() {
         return "";
     }
 
