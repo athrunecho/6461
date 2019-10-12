@@ -1,4 +1,4 @@
-package httpclientlibrary;
+package clientlibrary;
 
 import java.util.HashMap;
 import java.util.Iterator;

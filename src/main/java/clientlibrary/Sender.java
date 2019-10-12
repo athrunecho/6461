@@ -1,13 +1,13 @@
-package httpclientlibrary;
+package clientlibrary;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
- * HTTPSender class sends data through SocketChannel
+ * Sender class sends data through SocketChannel
  */
-public class HTTPSender {
+public class Sender {
 
     /**
      * Send method sends request in bytes to object server

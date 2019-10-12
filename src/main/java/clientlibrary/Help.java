@@ -1,9 +1,9 @@
-package httpclientlibrary;
+package clientlibrary;
 
 /**
  * HTTP help guide
  */
-public class HTTPHelp {
+public class Help {
 
     /**
      * help guide for commands

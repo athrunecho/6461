@@ -1,4 +1,4 @@
-package httpclientlibrary;
+package clientlibrary;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -38,10 +38,10 @@ public class HttpcClient {
 
                         if(cmds.length > 2){
                             // Check HELP with argument
-                            HTTPHelp.help(cmds[2]);
+                            Help.help(cmds[2]);
                         }else{
                             //Without argument
-                            HTTPHelp.help();
+                            Help.help();
                         }
                     }else{
                         // GET or POST request
@@ -72,14 +72,14 @@ public class HttpcClient {
                     case "get":
                         GetRequest getRequest = GetRequest.requestBuilder(cmds);
                         String getData = getRequest.printRequest();
-                        HTTPSender.send(channel, getData);
+                        Sender.send(channel, getData);
                         // Receive all what we have sent
                         Redirection.redirector(channel, getRequest, cmds);
                         break;
                     case "post":
                         PostRequest postRequest = PostRequest.requestBuilder(cmds);
                         String postData = postRequest.printRequest();
-                        HTTPSender.send(channel, postData);
+                        Sender.send(channel, postData);
                         Redirection.redirector(channel, postRequest, cmds);
                         break;
                     default:

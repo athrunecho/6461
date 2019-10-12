@@ -1,4 +1,4 @@
-package httpclientlibrary;
+package clientlibrary;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
