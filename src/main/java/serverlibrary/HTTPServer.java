@@ -29,7 +29,8 @@ public class HTTPServer {
             while (buf.hasRemaining()) {
                 stringBuf.append((char) buf.get());
             }
-            String completeResponse = stringBuf.toString().trim();
+            String completeRequest = stringBuf.toString().trim();
+            Parser.parse(completeRequest);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -47,6 +48,7 @@ public class HTTPServer {
             while (true) {
                 SocketChannel socketChannel = serverSocketChannel.accept();
                 if (socketChannel != null) {
+                    Log.logger.info("Socket has been built with " + socketChannel.getRemoteAddress());
                     RequestReciever(socketChannel);
                 }
             }
@@ -61,8 +63,6 @@ public class HTTPServer {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        //usage: httpfs [-v] [-p PORT] [-d PATH-TO-DIR]
-        //-v Prints debugging messages.
 
         //-d Specifies the directory that the server will use to read/write
         //requested files. Default is the current directory when launching the
@@ -78,7 +78,8 @@ public class HTTPServer {
 
             for (int i = 0; i < read.length; i++) {
                 if (read[i].equals("-v")) {
-                    //-v Prints debugging messages.
+                    Log.initial();
+                    Log.logger.info("debugging messages open");
                 }
 
                 if (read[i].equals("-p")) {
@@ -90,6 +91,8 @@ public class HTTPServer {
                 }
             }
 
+            Log.logger.info("listening to the port of " + port);
+            Log.logger.info("woring directory is " + directory);
             Listener(port);
         } else {
             System.out.println("parameters invalid");

@@ -12,9 +12,9 @@ import java.util.Scanner;
 import static java.util.Arrays.asList;
 
 /**
- * An httpc client based on HTTP protocol
+ * An　client based on HTTP protocol
  */
-public class HttpcClient {
+public class HTTPClient {
 
     /**
      * start the client

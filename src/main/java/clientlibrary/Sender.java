@@ -23,6 +23,7 @@ public class Sender {
             }
             // Using ByteBuffer to write into socket channel
             ByteBuffer buffer = ByteBuffer.allocate(2048);
+            System.out.println("\n" + data);
             buffer.put(data.getBytes());
             buffer.flip();
 
