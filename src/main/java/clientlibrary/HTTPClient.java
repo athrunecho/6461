@@ -16,6 +16,9 @@ import static java.util.Arrays.asList;
  */
 public class HTTPClient {
 
+    public static String host = "localhost";
+    public static String port = "8080";
+
     /**
      * start the client
      *
@@ -103,11 +106,11 @@ public class HTTPClient {
         OptionParser parser = new OptionParser();
         parser.acceptsAll(asList("host", "h"), "EchoServer hostname")
                 .withOptionalArg()
-                .defaultsTo("localhost");
+                .defaultsTo(host);
 
         parser.acceptsAll(asList("port", "p"), "EchoServer listening port")
                 .withOptionalArg()
-                .defaultsTo("8080");
+                .defaultsTo(port);
 
         OptionSet opts = parser.parse(args);
         String host = (String) opts.valueOf("host");

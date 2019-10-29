@@ -101,6 +101,7 @@ public class PostRequest extends RequestModule {
             if (ContentLength.length() > 0) {
                 // Body is empty
                 return HTTPMethods + " " + URL + " " + HTTPVersion
+                        + Host
                         + settings
                         + ContentLength + "\r\n"
                         + ConnectionStatus
@@ -108,6 +109,7 @@ public class PostRequest extends RequestModule {
                         + Body;
             } else {
                 return HTTPMethods + " " + URL + " " + HTTPVersion
+                        + Host
                         + settings
                         + ConnectionStatus
                         + "\r\n"
@@ -117,12 +119,14 @@ public class PostRequest extends RequestModule {
             if (ContentLength.length() > 0) {
                 // Body is empty
                 return HTTPMethods + " " + URL + " " + HTTPVersion
+                        + Host
                         + ContentLength + "\r\n"
                         + ConnectionStatus
                         + "\r\n"
                         + Body;
             } else {
                 return HTTPMethods + " " + URL + " " + HTTPVersion
+                        + Host
                         + ConnectionStatus
                         + "\r\n"
                         + Body;

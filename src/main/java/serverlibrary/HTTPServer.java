@@ -3,9 +3,14 @@ package serverlibrary;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Scanner;
+
+import static java.nio.channels.SelectionKey.OP_ACCEPT;
+import static java.nio.channels.SelectionKey.OP_READ;
 
 /**
  * A file server based on HTTP protocol
@@ -15,52 +20,102 @@ public class HTTPServer {
     static int port = 8080;
     static String directory = "src/server";
 
-    /**
-     * read request
-     *
-     * @param channel socket channel from listener
-     * @author Tiancheng
-     */
-    private static void RequestReciever(SocketChannel channel) {
+
+    private void readAndEcho(SelectionKey sk) {
+        SocketChannel client = (SocketChannel) sk.channel();
         try {
             ByteBuffer buf = ByteBuffer.allocate(2048);
-            StringBuffer stringBuf = new StringBuffer();
+            while (true) {
 
-            channel.read(buf);
-            buf.flip();
+                int n = client.read(buf);
 
-            while (buf.hasRemaining()) {
-                stringBuf.append((char) buf.get());
+                if (n == -1) {
+                    unregisterClient(sk);
+                    return;
+                }
+                if (n == 0) {
+                    return;
+                }
+
+                String completeRequest = new String(buf.array()).trim();
+                System.out.println(completeRequest);
+                String pkg = Parser.Parse(completeRequest);
+
+                buf.flip();
+                // Using ByteBuffer to write into socket channel
+                buf = ByteBuffer.wrap(pkg.getBytes());
+                client.write(buf);
+                buf.clear();
             }
-
-            String completeRequest = stringBuf.toString().trim();
-
-            System.out.println(completeRequest);
-
-            String pkg = Parser.Parse(completeRequest);
-            send(channel, pkg);
-
         } catch (IOException e) {
-            e.printStackTrace();
+            unregisterClient(sk);
+            Log.logger.warning("Failed to receive/send data" + e);
         }
     }
+
+    /**
+     *
+     * @param server
+     * @param selector
+     */
+    private void newClient(ServerSocketChannel server, Selector selector) {
+        try {
+            SocketChannel client = server.accept();
+            client.configureBlocking(false);
+            Log.logger.info("New client from " + client.getRemoteAddress());
+            client.register(selector,OP_READ, client);
+        } catch (IOException e) {
+            Log.logger.warning("Failed to accept client"+ e);
+        }
+    }
+
+    /**
+     *
+     * @param s
+     */
+    private void unregisterClient(SelectionKey s) {
+        try {
+            s.cancel();
+            s.channel().close();
+        } catch (IOException e) {
+            Log.logger.warning("Failed to clean up"+ e);
+        }
+    }
+
 
     /**
      * @param port
      * @author Tiancheng
      */
-    private static void Listener(int port) {
+    private void Listener(int port) {
         try {
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.socket().bind(new InetSocketAddress(port));
             serverSocketChannel.configureBlocking(false);
-            while (true) {
+            Selector selector = Selector.open();
+            serverSocketChannel.register(selector, OP_ACCEPT, null);
+
+            while(true) {
+                selector.select();
+                for (SelectionKey sk : selector.selectedKeys()) {
+                    // Acceptable means there is a new incoming
+                    if (sk.isAcceptable()) {
+                        newClient(serverSocketChannel, selector);
+
+                        // Readable means this client has sent data or closed
+                    } else if (sk.isReadable()) {
+                        readAndEcho(sk);
+                    }
+                }
+                selector.selectedKeys().clear();
+            }
+            /*while (true) {
                 SocketChannel socketChannel = serverSocketChannel.accept();
                 if (socketChannel != null) {
                     Log.logger.info("Socket has been built with " + socketChannel.getRemoteAddress());
-                    RequestReciever(socketChannel);
+                    ForkJoinPool.commonPool().submit(() -> RequestReciever(socketChannel));
                 }
-            }
+            }*/
         } catch (IOException e) {
             System.out.println("HTTPServer: " + e.getMessage());
         }
@@ -74,7 +129,7 @@ public class HTTPServer {
             }
             // Using ByteBuffer to write into socket channel
             ByteBuffer buffer = ByteBuffer.allocate(2048);
-            System.out.println(data);
+            System.out.println(data + "\n");
             buffer.put(data.getBytes());
             buffer.flip();
 
@@ -102,8 +157,10 @@ public class HTTPServer {
 
         if (read[0].equals("httpfs")) {
 
+            Log.hide();
+
             for (int i = 0; i < read.length; i++) {
-                if (read[i].equals("-v")) {
+                if (read[i].contains("-v")) {
                     Log.initial();
                     Log.logger.info("debugging messages open");
                 }
@@ -121,7 +178,7 @@ public class HTTPServer {
             Log.logger.info("StartUp path is " + directory);
 
             //StartUp
-            Listener(port);
+            new HTTPServer().Listener(port);
         } else {
             System.out.println("parameters invalid");
         }

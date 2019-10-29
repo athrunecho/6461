@@ -18,6 +18,7 @@ public class Parser {
         ResponseFrame response = new ResponseFrame();
 
         try {
+            System.out.println("First Line: " + firstLine);
             String filePath = slice[1];
             String entirePath = directory + filePath;
 

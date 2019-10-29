@@ -30,6 +30,7 @@ public class Sender {
             while (buffer.hasRemaining()) {
                 channel.write(buffer);
             }
+            buffer.clear();
         } catch (IOException e) {
             e.printStackTrace();
         }

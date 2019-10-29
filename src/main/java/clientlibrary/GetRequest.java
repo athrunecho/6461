@@ -23,7 +23,7 @@ public class GetRequest extends RequestModule {
 
         // Find and server url as well as host name
         for (int i = 1; i < args.length; i++) {
-            if (args[i].contains("http")) {
+            if (args[i].contains("/")) {
                 request.setServerInfo(args[i]);
             }
         }
@@ -69,6 +69,7 @@ public class GetRequest extends RequestModule {
 
             // HTTP header
             return HTTPMethods + " " + URL + " " + HTTPVersion
+                    + Host
                     + settings
                     + ConnectionStatus
                     + "\r\n"
@@ -78,6 +79,7 @@ public class GetRequest extends RequestModule {
         } else {
             // HTTP header
             return HTTPMethods + " " + URL + " " + HTTPVersion
+                    + Host
                     + ConnectionStatus
                     + "\r\n"
                     // HTTP body

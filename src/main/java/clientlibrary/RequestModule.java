@@ -25,8 +25,7 @@ public class RequestModule {
         url = url.replaceAll("\'", "");
         try {
             this.URL = url;
-            java.net.URL URL = new java.net.URL(url);
-            this.Host = URL.getHost();
+            this.Host = "Host:" + HTTPClient.host + "\r\n";
         } catch (Exception e) {
             e.printStackTrace();
         }

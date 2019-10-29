@@ -9,6 +9,9 @@ public class Log {
 
     public static void initial(){
         logger.setLevel(Level.ALL);
+    }
 
+    public static void hide(){
+        logger.setLevel(Level.OFF);
     }
 }

@@ -1,9 +1,13 @@
 package serverlibrary;
 
+import java.util.Date;
+import java.text.SimpleDateFormat;
+
 public class ResponseFrame {
 
     private String HTTPVersion = "HTTP/1.0 ";
     private String Status = "";
+    private String Date = "";
     private String ContentLength = "";
     private String ContentType = "";
     private String ContentDisposition = "";
@@ -44,6 +48,13 @@ public class ResponseFrame {
     /**
      *
      */
+    public void SetContentType(String type){
+       this.ContentType = "Content-Type:" + type;
+    }
+
+    /**
+     *
+     */
     public void SetDisposition(){
 
     }
@@ -54,7 +65,14 @@ public class ResponseFrame {
      */
     public String toString(){
 
+        // get time stamp
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        this.Date = "Date:" + df.format(new Date()) + "\r\n";
+
         String Message = this.HTTPVersion + this.Status;
+
+        Message += this.Date;
+
         if(!this.ContentLength.isEmpty()){
             Message += this.ContentLength;
         }
@@ -74,4 +92,19 @@ public class ResponseFrame {
         return Message;
     }
 
+    public static String mapping(String name) {
+        name = name.toLowerCase().trim();
+        System.out.println("mapping: "+ name);
+
+        if (name.endsWith(".txt")) {
+            return "text/plain\r\n";
+        } else if (name.endsWith(".html")) {
+            return "text/html\r\n";
+        } else if (name.endsWith(".xml")) {
+            return "text/xml\r\n";
+        } else if (name.endsWith(".json")) {
+            return "application/json\r\n";
+        }
+            return null;
+    }
 }
