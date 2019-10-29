@@ -12,6 +12,9 @@ import java.util.Scanner;
  */
 public class HTTPServer {
 
+    static int port = 8080;
+    static String directory = "src/server";
+
     /**
      * read request
      *
@@ -29,8 +32,14 @@ public class HTTPServer {
             while (buf.hasRemaining()) {
                 stringBuf.append((char) buf.get());
             }
+
             String completeRequest = stringBuf.toString().trim();
-            Parser.parse(completeRequest);
+
+            System.out.println(completeRequest);
+
+            String pkg = Parser.Parse(completeRequest);
+            send(channel, pkg);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,7 +49,7 @@ public class HTTPServer {
      * @param port
      * @author Tiancheng
      */
-    public static void Listener(int port) {
+    private static void Listener(int port) {
         try {
             ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
             serverSocketChannel.socket().bind(new InetSocketAddress(port));
@@ -57,6 +66,26 @@ public class HTTPServer {
         }
     }
 
+
+    private static void send(SocketChannel channel, String data) {
+        try {
+            if (data == null) {
+                return;
+            }
+            // Using ByteBuffer to write into socket channel
+            ByteBuffer buffer = ByteBuffer.allocate(2048);
+            System.out.println(data);
+            buffer.put(data.getBytes());
+            buffer.flip();
+
+            while (buffer.hasRemaining()) {
+                channel.write(buffer);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * @param args
      * @author Tiancheng
@@ -70,9 +99,6 @@ public class HTTPServer {
         System.out.println("Please enter startup parameters");
         String[] read = scanner.nextLine().toLowerCase().split(" ");
         scanner.close();
-
-        int port = 8080;
-        String directory = "src/server";
 
         if (read[0].equals("httpfs")) {
 
@@ -92,7 +118,9 @@ public class HTTPServer {
             }
 
             Log.logger.info("listening to the port of " + port);
-            Log.logger.info("woring directory is " + directory);
+            Log.logger.info("StartUp path is " + directory);
+
+            //StartUp
             Listener(port);
         } else {
             System.out.println("parameters invalid");

@@ -103,11 +103,11 @@ public class HTTPClient {
         OptionParser parser = new OptionParser();
         parser.acceptsAll(asList("host", "h"), "EchoServer hostname")
                 .withOptionalArg()
-                .defaultsTo("httpbin.org");
+                .defaultsTo("localhost");
 
         parser.acceptsAll(asList("port", "p"), "EchoServer listening port")
                 .withOptionalArg()
-                .defaultsTo("80");
+                .defaultsTo("8080");
 
         OptionSet opts = parser.parse(args);
         String host = (String) opts.valueOf("host");
