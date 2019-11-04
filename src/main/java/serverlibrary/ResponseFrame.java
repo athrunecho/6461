@@ -55,8 +55,18 @@ public class ResponseFrame {
     /**
      *
      */
-    public void SetDisposition(){
+    public void SetDisposition(String param, String fileName){
 
+        param = param.replaceAll("Content-Disposition:", "");
+        param = param.toLowerCase().trim();
+
+        if(param.equals("inline")){
+            this.ContentDisposition = "Content-Disposition:inline\r\n";
+            return;
+        }else if(param.equals("attachment")){
+            this.ContentDisposition = "Content-Disposition:attachment; filename=\"" + fileName + "\"\r\n";
+            return;
+        }
     }
 
     /**

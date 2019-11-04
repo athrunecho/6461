@@ -6,9 +6,15 @@ import java.io.FileReader;
 
 public class GetFile {
 
-    public void GetFile(ResponseFrame response, String fileAddress, String type) {
+    public void GetFile(ResponseFrame response, String fileAddress, String type, String disposition) {
 
         String messageBody = "";
+
+        if(fileAddress.contains("/../")){
+            response.Set403();
+            return;
+        }
+
         File file = new File(fileAddress);
 
         if (!file.exists()) {
@@ -55,7 +61,7 @@ public class GetFile {
 
         // Have an specific filename
         if (str[str.length - 1].contains(".")) {
-            System.out.println("KKKKKK");
+            //System.out.println("KKKKKK");
             if (file.isFile()) {
                 if (file.getName().equals(str[str.length - 1])) {
                     //Read file and put into body
@@ -68,7 +74,7 @@ public class GetFile {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-
+                    response.SetDisposition(disposition, str[str.length - 1]);
                     response.SetContentType(ResponseFrame.mapping(str[str.length - 1]));
                     response.SetMessage(messageBody);
                     return;

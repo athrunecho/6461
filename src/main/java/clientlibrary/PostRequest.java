@@ -26,7 +26,7 @@ public class PostRequest extends RequestModule {
 
         // Find and server url as well as host name
         for (int i = 1; i < args.length; i++) {
-            if (args[i].contains("http")) {
+            if (args[i].contains("/")) {
                 request.setServerInfo(args[i]);
             }
         }
