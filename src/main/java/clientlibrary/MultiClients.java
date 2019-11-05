@@ -19,7 +19,7 @@ public class MultiClients {
             SocketChannel channel = SocketChannel.open();
             channel.connect(address);
 
-            String data = "GET /Concurrent.txt HTTP/1.0\r\n" +
+            String data = "GET /test.txt HTTP/1.0\r\n" +
                     "Host:localhost\r\n" +
                     "Connection:Keep-Alive\r\n\r\n";
 
@@ -42,8 +42,9 @@ public class MultiClients {
                 while (buffer.hasRemaining()) {
                     stringBuf.append((char) buffer.get());
                 }
-                String completeResponse = stringBuf.toString().trim();
+                buffer.clear();
 
+                String completeResponse = stringBuf.toString().trim();
                 System.out.println(completeResponse + "\n");
             }
 
@@ -60,15 +61,17 @@ public class MultiClients {
             SocketChannel channel = SocketChannel.open();
             channel.connect(address);
 
-            String data = "POST /Concurrent.txt HTTP/1.0\r\n" +
+            String data = "POST /test.txt HTTP/1.0\r\n" +
                     "Host:localhost\r\n" +
-                    "Content-Length:5\r\n" +
-                    "Connection:Keep-Alive\r\n\r\n" +
+                    "OverWrite:false\r\n" +
+                    "Content-Length:6\r\n" +
+                    "Connection:Keep-Alive\r\n"+
+                    "\r\n" +
                     "write";
 
             //loop 5 times
             for(int i=0;i<5;i++){
-                String mod = data + String.valueOf(i);
+                String mod = data + String.valueOf(i) + "\r\n";
                 ByteBuffer buffer = ByteBuffer.allocate(2048);
                 buffer.put(mod.getBytes());
                 buffer.flip();
@@ -86,6 +89,7 @@ public class MultiClients {
                 while (buffer.hasRemaining()) {
                     stringBuf.append((char) buffer.get());
                 }
+                buffer.clear();
                 String completeResponse = stringBuf.toString().trim();
 
                 System.out.println(completeResponse + "\n");
@@ -120,8 +124,8 @@ public class MultiClients {
         };
 
         Thread Readthread = new Thread(Read);
-        Readthread.start();
         Thread Writethread = new Thread(Write);
+        Readthread.start();
         Writethread.start();
     }
 }

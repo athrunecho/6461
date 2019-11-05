@@ -8,6 +8,12 @@ public class Parser {
 
         Log.logger.info("request: \n" + content);
         String[] complete = content.split("\r\n\r\n");
+
+        //System.out.println("Complete-Length: " + complete.length);
+        //System.out.println("Complete0: " + complete[0]);
+
+
+
         String[] headers = complete[0].split("\r\n");
         //String[] bodies = entire[1].split("\r\n");
 
@@ -16,7 +22,6 @@ public class Parser {
         ResponseFrame response = new ResponseFrame();
 
         try {
-            System.out.println("First Line: " + firstLine);
             String filePath = slice[1];
             String entirePath = directory + filePath;
 

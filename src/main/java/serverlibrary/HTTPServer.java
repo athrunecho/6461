@@ -17,9 +17,8 @@ import static java.nio.channels.SelectionKey.OP_READ;
  */
 public class HTTPServer {
 
-    static int port = 8080;
+    private static int port = 8080;
     static String directory = "src/server";
-
 
     private void readAndEcho(SelectionKey sk) {
         SocketChannel client = (SocketChannel) sk.channel();
@@ -38,7 +37,7 @@ public class HTTPServer {
                 }
 
                 String completeRequest = new String(buf.array()).trim();
-                System.out.println(completeRequest);
+                System.out.println(completeRequest+"\n");
                 String pkg = Parser.Parse(completeRequest);
 
                 buf.flip();
@@ -109,41 +108,14 @@ public class HTTPServer {
                 }
                 selector.selectedKeys().clear();
             }
-            /*while (true) {
-                SocketChannel socketChannel = serverSocketChannel.accept();
-                if (socketChannel != null) {
-                    Log.logger.info("Socket has been built with " + socketChannel.getRemoteAddress());
-                    ForkJoinPool.commonPool().submit(() -> RequestReciever(socketChannel));
-                }
-            }*/
         } catch (IOException e) {
             System.out.println("HTTPServer: " + e.getMessage());
         }
     }
 
-
-    private static void send(SocketChannel channel, String data) {
-        try {
-            if (data == null) {
-                return;
-            }
-            // Using ByteBuffer to write into socket channel
-            ByteBuffer buffer = ByteBuffer.allocate(2048);
-            System.out.println(data + "\n");
-            buffer.put(data.getBytes());
-            buffer.flip();
-
-            while (buffer.hasRemaining()) {
-                channel.write(buffer);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     /**
+     *
      * @param args
-     * @author Tiancheng
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);

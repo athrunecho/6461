@@ -20,8 +20,20 @@ public class PostFile {
             File file = new File(fileAddress);
 
             if (!file.exists()) {
-                response.Set404();
-                return;
+                //create file
+                if (file.createNewFile()) {
+                    Log.logger.info("create file " + file.getName() +" success");
+                    FileWriter fileWriter = new FileWriter(file, false);
+                    fileWriter.write(content);
+                    fileWriter.flush();
+                    fileWriter.close();
+                    response.Set200();
+                    return;
+                } else {
+                    Log.logger.info("failed to create file " + file.getName());
+                    response.Set404();
+                    return;
+                }
             }
 
             response.Set404();
@@ -46,24 +58,7 @@ public class PostFile {
                 fileWriter.close();
                 response.Set200();
                 return;
-
             }
-
-            //create file
-            if (file.createNewFile()) {
-                Log.logger.info("create file " + file.getName() +" success");
-                FileWriter fileWriter = new FileWriter(file, false);
-                fileWriter.write(content);
-                fileWriter.flush();
-                fileWriter.close();
-                response.Set200();
-                return;
-            } else {
-                Log.logger.info("failed to create file " + file.getName());
-                response.Set404();
-                return;
-            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }

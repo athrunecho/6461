@@ -104,7 +104,6 @@ public class ResponseFrame {
 
     public static String mapping(String name) {
         name = name.toLowerCase().trim();
-        System.out.println("mapping: "+ name);
 
         if (name.endsWith(".txt")) {
             return "text/plain\r\n";
