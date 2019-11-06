@@ -10,7 +10,7 @@ public class GetFile {
 
         String messageBody = "";
 
-        if(fileAddress.contains("/../")){
+        if (fileAddress.contains("/../")) {
             response.Set403();
             return;
         }
@@ -61,8 +61,13 @@ public class GetFile {
 
         // Have an specific filename
         if (str[str.length - 1].contains(".")) {
-            //System.out.println("KKKKKK");
             if (file.isFile()) {
+
+                if (!file.canRead()) {
+                    response.Set403();
+                    return;
+                }
+
                 if (file.getName().equals(str[str.length - 1])) {
                     //Read file and put into body
                     try {
@@ -81,46 +86,6 @@ public class GetFile {
                 }
             }
             response.Set404();
-        } /*else {
-            System.out.println("LLLLL");
-            //Has name and content type requirement
-            if (!type.isEmpty()) {
-                System.out.println("DDDDD");
-                for (int i = 0; i < array.length; i++) {
-                    String[] types = type.split("/");
-                    for (int j = 0; j < types.length; j++) {
-                        if (array[i].getName().contains(types[j])) {
-                            if (array[i].isFile()) {
-                                if (array[i].getName().contains(str[str.length - 1])) {
-                                    messageBody += array[i].getName() + "\n";
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                System.out.println("HHHHHHHHHHHHHHHHHHHHH");
-                // No content type require but has part of name
-                for (int i = 0; i < array.length; i++) {
-                    if (array[i].isFile()) {
-                        if (array[i].getName().contains(str[str.length - 1])){
-                            System.out.println("HHHHHHHHHHHHHHHHHHHHH");
-                            messageBody += array[i].getName() + "\n";
-                        }
-                    } else if (array[i].isDirectory()) {
-                        if (array[i].getName().contains(str[str.length - 1])){
-                            messageBody += array[i].getName() + "/\n";
-                        }
-                    }
-                }
-            }
-            System.out.println("gg"+messageBody);
-            if (messageBody.isEmpty()) {
-                response.Set404();
-                return;
-            }
-            response.SetMessage(messageBody);
         }
-        */
     }
 }

@@ -9,9 +9,7 @@ public class PostFile {
     public void PostFile(ResponseFrame response, String fileAddress, String content, Boolean overwrite) {
 
         try {
-
-            String messageBody = "";
-
+            //String messageBody = "";
             if (fileAddress.contains("/../")) {
                 response.Set403();
                 return;
@@ -22,7 +20,7 @@ public class PostFile {
             if (!file.exists()) {
                 //create file
                 if (file.createNewFile()) {
-                    Log.logger.info("create file " + file.getName() +" success");
+                    Log.logger.info("create file " + file.getName() + " success");
                     FileWriter fileWriter = new FileWriter(file, false);
                     fileWriter.write(content);
                     fileWriter.flush();
@@ -35,11 +33,14 @@ public class PostFile {
                     return;
                 }
             }
-
             response.Set404();
 
             if (file.isFile()) {
-
+                //Detect whether the file support write in
+                if (!file.canWrite()) {
+                    response.Set403();
+                    return;
+                }
                 //Overwrite
                 if (overwrite) {
                     FileWriter fileWriter = new FileWriter(file, false);
@@ -49,7 +50,6 @@ public class PostFile {
                     response.Set200();
                     return;
                 }
-
                 //append to the end of the file
                 FileWriter fileWriter = new FileWriter(file, true);
                 content = content + System.getProperty("line.separator");
@@ -57,7 +57,6 @@ public class PostFile {
                 fileWriter.flush();
                 fileWriter.close();
                 response.Set200();
-                return;
             }
         } catch (IOException e) {
             e.printStackTrace();
