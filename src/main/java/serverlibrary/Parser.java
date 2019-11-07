@@ -1,13 +1,26 @@
 package serverlibrary;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static serverlibrary.HTTPServer.directory;
 
 public class Parser {
 
+    public static int appearNumber(String srcText, String findText) {
+        int count = 0;
+        Pattern p = Pattern.compile(findText);
+        Matcher m = p.matcher(srcText);
+        while (m.find()) {
+            count++;
+        }
+        return count;
+    }
+
     /**
-     *
-     * @param content
-     * @return
+     * Parse is a method for parsing the HTTP request
+     * @param content request content
+     * @return prepared response
      */
     public synchronized static String Parse(String content) {
 
@@ -17,6 +30,13 @@ public class Parser {
         String firstLine = headers[0];
         String[] slice = firstLine.split(" ");
         ResponseFrame response = new ResponseFrame();
+        String body = "";
+
+        if(complete.length == 1){
+            body = "";
+        }else{
+            body = complete[1];
+        }
 
         try {
             String filePath = slice[1];
@@ -25,7 +45,11 @@ public class Parser {
             String disposition = "inline";
             Boolean overWrite = true;
             String contentType = "";
-            String endName = "";
+
+            if(appearNumber(filePath, "/") > 1){
+                response.Set403();
+                return response.toString();
+            }
 
             // Header checker
             for (int i = 0; i < headers.length; i++) {
@@ -44,7 +68,6 @@ public class Parser {
                 //
                 if (headers[i].contains("Content-Type:") && firstLine.contains("POST") && !filePath.contains(".")) {
                     contentType = headers[i].replaceAll(" Content-Type:", "");
-                    System.out.println(contentType);
                     entirePath += ResponseFrame.reverseMapping(contentType);
                 }
             }
@@ -55,11 +78,12 @@ public class Parser {
 
             } else if (firstLine.contains("POST")) {
                 PostFile pf = new PostFile();
-                pf.PostFile(response, entirePath, complete[1], overWrite);
+                pf.PostFile(response, entirePath, body, overWrite);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Log.logger.info("response \n" + response.toString() + "\n");
         return response.toString();
     }
 }

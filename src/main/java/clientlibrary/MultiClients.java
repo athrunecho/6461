@@ -7,15 +7,19 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
 /**
- *
+ * Multiple Client test
  */
 public class MultiClients {
 
     /**
-     * @param address
+     * Read Method
+     *
+     * @param address server address
      */
     private static void ReadClient(SocketAddress address) {
         try {
+            ByteBuffer buffer1 = ByteBuffer.allocate(1024);
+            ByteBuffer buffer2 = ByteBuffer.allocate(1024);
             SocketChannel channel = SocketChannel.open();
             channel.connect(address);
 
@@ -23,30 +27,28 @@ public class MultiClients {
                     "Host:localhost\r\n" +
                     "Connection:Keep-Alive\r\n\r\n";
 
-            //loop 5 times
-            for(int i=0;i<5;i++){
-                ByteBuffer buffer = ByteBuffer.allocate(2048);
-                buffer.put(data.getBytes());
-                buffer.flip();
+            buffer1.put(data.getBytes());
+            buffer1.flip();
 
-                while (buffer.hasRemaining()) {
-                    channel.write(buffer);
-                }
-                buffer.clear();
-
-                StringBuffer stringBuf = new StringBuffer();
-
-                channel.read(buffer);
-                buffer.flip();
-
-                while (buffer.hasRemaining()) {
-                    stringBuf.append((char) buffer.get());
-                }
-                buffer.clear();
-
-                String completeResponse = stringBuf.toString().trim();
-                System.out.println(completeResponse + "\n");
+            while (buffer1.hasRemaining()) {
+                channel.write(buffer1);
             }
+            buffer1.clear();
+
+            StringBuffer stringBuf = new StringBuffer();
+
+            channel.read(buffer2);
+            buffer2.flip();
+
+            while (buffer2.hasRemaining()) {
+                stringBuf.append((char) buffer2.get());
+            }
+            buffer2.clear();
+
+            String completeResponse = stringBuf.toString().trim();
+            System.out.println(completeResponse + "\n");
+
+            channel.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -54,10 +56,14 @@ public class MultiClients {
     }
 
     /**
-     * @param address
+     * Write method
+     *
+     * @param address server address
      */
     private static void WriteClient(SocketAddress address) {
         try {
+            ByteBuffer buffer1 = ByteBuffer.allocate(1024);
+            ByteBuffer buffer2 = ByteBuffer.allocate(1024);
             SocketChannel channel = SocketChannel.open();
             channel.connect(address);
 
@@ -65,44 +71,40 @@ public class MultiClients {
                     "Host:localhost\r\n" +
                     "OverWrite:false\r\n" +
                     "Content-Length:6\r\n" +
-                    "Connection:Keep-Alive\r\n"+
+                    "Connection:Keep-Alive\r\n" +
                     "\r\n" +
                     "write";
 
-            //loop 5 times
-            for(int i=0;i<5;i++){
-                String mod = data + String.valueOf(i) + "\r\n";
-                ByteBuffer buffer = ByteBuffer.allocate(2048);
-                buffer.put(mod.getBytes());
-                buffer.flip();
+            String mod = data + "\r\n";
+            buffer1.put(mod.getBytes());
+            buffer1.flip();
 
-                while (buffer.hasRemaining()) {
-                    channel.write(buffer);
-                }
-                buffer.clear();
-
-                StringBuffer stringBuf = new StringBuffer();
-
-                channel.read(buffer);
-                buffer.flip();
-
-                while (buffer.hasRemaining()) {
-                    stringBuf.append((char) buffer.get());
-                }
-                buffer.clear();
-                String completeResponse = stringBuf.toString().trim();
-
-                System.out.println(completeResponse + "\n");
+            while (buffer1.hasRemaining()) {
+                channel.write(buffer1);
             }
+            buffer1.clear();
+
+            StringBuffer stringBuf = new StringBuffer();
+
+            channel.read(buffer2);
+            buffer2.flip();
+
+            while (buffer2.hasRemaining()) {
+                stringBuf.append((char) buffer2.get());
+            }
+            buffer2.clear();
+            String completeResponse = stringBuf.toString().trim();
+
+            System.out.println(completeResponse + "\n");
+
+
+            channel.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * @param args
-     */
     public static void main(String[] args) {
 
         InetSocketAddress localhost = new InetSocketAddress("localhost", 8080);
@@ -123,9 +125,9 @@ public class MultiClients {
             }
         };
 
-        Thread Readthread = new Thread(Read);
-        Thread Writethread = new Thread(Write);
-        Readthread.start();
-        Writethread.start();
+        for (int i = 0; i < 5; i++) {
+            new Thread(Read).start();
+            new Thread(Write).start();
+        }
     }
 }

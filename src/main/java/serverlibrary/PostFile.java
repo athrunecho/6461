@@ -10,10 +10,6 @@ public class PostFile {
 
         try {
             //String messageBody = "";
-            if (fileAddress.contains("/../")) {
-                response.Set403();
-                return;
-            }
 
             File file = new File(fileAddress);
 
@@ -33,12 +29,12 @@ public class PostFile {
                     return;
                 }
             }
-            response.Set404();
 
             if (file.isFile()) {
                 //Detect whether the file support write in
                 if (!file.canWrite()) {
                     response.Set403();
+                    Log.logger.warning(file.getName() + " can not write in");
                     return;
                 }
                 //Overwrite
@@ -48,6 +44,7 @@ public class PostFile {
                     fileWriter.flush();
                     fileWriter.close();
                     response.Set200();
+                    Log.logger.info("overwrite to file " + file.getName() + " success");
                     return;
                 }
                 //append to the end of the file
@@ -57,7 +54,11 @@ public class PostFile {
                 fileWriter.flush();
                 fileWriter.close();
                 response.Set200();
+                Log.logger.info("append to file " + file.getName() + " success");
+                return;
             }
+            response.Set404();
+
         } catch (IOException e) {
             e.printStackTrace();
         }

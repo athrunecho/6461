@@ -10,20 +10,11 @@ public class GetFile {
 
         String messageBody = "";
 
-        if (fileAddress.contains("/../")) {
-            response.Set403();
-            return;
-        }
-
         File file = new File(fileAddress);
-
-        if (!file.exists()) {
-            response.Set404();
-            return;
-        }
 
         File[] array = file.listFiles();
         String[] str = fileAddress.split("/");
+        String fName = str[str.length - 1];
         response.Set200();
 
         // get the folder list(with or without type check)
@@ -55,20 +46,22 @@ public class GetFile {
             if (messageBody.isEmpty()) {
                 messageBody = "empty folder";
             }
+            Log.logger.info("search directory " + fileAddress);
             response.SetMessage(messageBody);
             return;
         }
 
         // Have an specific filename
-        if (str[str.length - 1].contains(".")) {
+        if (fName.endsWith(".txt") || fName.endsWith(".html") || fName.endsWith(".xml") || fName.endsWith(".json")) {
             if (file.isFile()) {
 
                 if (!file.canRead()) {
                     response.Set403();
+                    Log.logger.warning(file.getName() + " can not read");
                     return;
                 }
 
-                if (file.getName().equals(str[str.length - 1])) {
+                if (file.getName().equals(fName)) {
                     //Read file and put into body
                     try {
                         BufferedReader in = new BufferedReader(new FileReader(file));
@@ -79,13 +72,43 @@ public class GetFile {
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
-                    response.SetDisposition(disposition, str[str.length - 1]);
-                    response.SetContentType(ResponseFrame.mapping(str[str.length - 1]));
+                    response.SetDisposition(disposition, fName);
+                    response.SetContentType(ResponseFrame.mapping(fName));
                     response.SetMessage(messageBody);
                     return;
                 }
             }
-            response.Set404();
+        }else{
+            fileAddress = fileAddress.replaceAll(fName, "");
+            File search = new File(fileAddress);
+            File[] list = search.listFiles();
+
+            for (int k = 0; k < list.length; k++) {
+                if (list[k].isFile()) {
+                    if(!type.isEmpty()){
+                        String[] types = type.split("/");
+                        for (int j = 0; j < types.length; j++) {
+                            if (list[k].getName().contains(types[j]) && list[k].getName().contains(fName)) {
+                                if (list[k].isFile()) {
+                                    messageBody += list[k].getName() + "\n";
+                                }
+                            }
+                        }
+                    }else{
+                        if (list[k].getName().contains(fName)) {
+                            if (list[k].isFile()) {
+                                messageBody += list[k].getName() + "\n";
+                            }
+                        }
+                    }
+                }
+            }
+
+            if(!messageBody.isEmpty()){
+                response.SetMessage(messageBody);
+                return;
+            }
         }
+        response.Set404();
     }
 }

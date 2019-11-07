@@ -79,7 +79,6 @@ public class HTTPServer {
                 }
 
                 String completeRequest = new String(buf.array()).trim();
-                System.out.println(completeRequest + "\n");
                 String pkg = Parser.Parse(completeRequest);
 
                 buf.flip();
@@ -151,7 +150,7 @@ public class HTTPServer {
                 selector.selectedKeys().clear();
             }
         } catch (IOException e) {
-            System.out.println("HTTPServer: " + e.getMessage());
+            Log.logger.warning("HTTPServer: " + e.getMessage());
         }
     }
 }

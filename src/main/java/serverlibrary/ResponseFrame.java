@@ -34,7 +34,7 @@ public class ResponseFrame {
         } else if (name.endsWith(".json")) {
             return "application/json\r\n";
         }
-        return null;
+        return "";
     }
 
     /**
@@ -54,7 +54,7 @@ public class ResponseFrame {
         }else if(name.contains("application/json")){
             return ".json";
         }
-        return null;
+        return "";
     }
 
     /**
@@ -75,7 +75,7 @@ public class ResponseFrame {
      * Set403 indicate that users are banned to attach the file
      */
     public void Set403() {
-        this.Status = "403 Forbidden\r\n";
+        this.Status = "403 Access denied\r\n";
     }
 
     /**
@@ -115,7 +115,7 @@ public class ResponseFrame {
      */
     public String toString() {
         // get time stamp
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+        SimpleDateFormat df = new SimpleDateFormat("MM-dd HH:mm:ss:SSS");
         this.Date = "Date:" + df.format(new Date()) + "\r\n";
 
         String Message = this.HTTPVersion + this.Status;
